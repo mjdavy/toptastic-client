@@ -1,8 +1,9 @@
 # toptastic
 
-A new Flutter project.
+Flutter client for toptastic. Communicates with a server to fetch music charts by date. Sends the charts
+to another server to create youtube playlists
 
-## Getting Started
+## Getting Started with flutter
 
 This project is a starting point for a Flutter application.
 
