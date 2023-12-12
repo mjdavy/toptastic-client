@@ -2,6 +2,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Song {
   final String artist;
   final String songName;
@@ -32,7 +34,9 @@ class Song {
 
 Future<List<Song>> fetchSongs(DateTime date) async {
   final String formattedDate = DateFormat('yyyyMMdd').format(date);
-  var uri = Uri.parse("http://10.0.2.2:5000/api/songs/$formattedDate");
+  final prefs = await SharedPreferences.getInstance();
+  final serverUrl = prefs.getString('serverUrl') ?? 'http://10.0.2.2:5000/api/songs';
+  var uri = Uri.parse("$serverUrl/$formattedDate");
   final response = await http.get(uri);
 
   if (response.statusCode == 200) {
