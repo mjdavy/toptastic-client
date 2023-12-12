@@ -54,6 +54,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
+              Expanded(
+                child: Container(),
+              ),
               ElevatedButton(
                 onPressed: _saveServerUrl,
                 child: const Text('Save'),
