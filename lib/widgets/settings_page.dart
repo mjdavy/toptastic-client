@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -30,6 +31,18 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future<String> getServerStatus() async {
+    var response = await http.get(Uri.parse('http://10.0.2.2:3030/status'));
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, return the response body.
+      return response.body;
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to get server status');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +58,19 @@ class _SettingsPageState extends State<SettingsPage> {
               TextFormField(
                 controller: _serverController,
                 decoration: const InputDecoration(
-                  labelText: 'Server URL',
+                  labelText: 'Song Server URL',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the server URL';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _serverController,
+                decoration: const InputDecoration(
+                  labelText: 'Video Playlist Server URL',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -55,7 +80,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               Expanded(
-                child: Container(),
+                child: FutureBuilder<String>(
+                  future: getServerStatus(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.hasData) {
+                      return Text('Video Server Status: ${snapshot.data}');
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    // By default, show a loading spinner.
+                    return CircularProgressIndicator();
+                  },
+                ),
               ),
               ElevatedButton(
                 onPressed: _saveServerUrl,

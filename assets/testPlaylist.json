@@ -1,0 +1,26 @@
+{
+    "title": "Christmas",
+    "description": "A collection of top songs for December",
+    "tracks": [
+        {
+            "id": "track1",
+            "title": "LAST CHRISTMAS",
+            "artist": "WHAM"
+        },
+        {
+            "id": "track2",
+            "title": "ALL I WANT FOR CHRISTMAS IS YOU",
+            "artist": "MARIAH CAREY"
+        },
+        {
+            "id": "track3",
+            "title": "LOVIN ON ME",
+            "artist": "JACK HARLOW"
+        },
+        {
+            "id": "track4",
+            "title": "FAIRYTALE OF NEW YORK",
+            "artist": "POGUES FT KIRSTY MACCOLL"
+        }
+    ]
+}

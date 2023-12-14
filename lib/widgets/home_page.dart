@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
 import 'settings_page.dart';
 import 'song_list.dart';
+import 'package:http/http.dart' as http;
+import '../models/video_playlist.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -68,20 +72,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           IconButton(
             icon: const Icon(Icons.playlist_add),
-            onPressed: () {
-              // TODO - send the list to the youtube playlist creator
-              // Handle button press to create YouTube playlist
+            onPressed: () async {
+              // Assuming _songsFuture is a Future<List<Song>> of YouTube video IDs
+              List<Song> songs = await _songsFuture;
+
+              // Call the function to create the playlist
+              await createPlaylist(
+                  'Christmas', 'A collection of top songs for December', songs);
             },
           ),
           IconButton(
-      icon: const Icon(Icons.settings),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SettingsPage()),
-        );
-      },
-    ),
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+          ),
         ],
       ),
       body: Column(
@@ -92,5 +100,61 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+  Future<void> createPlaylist(
+    String title, String description, List<Song> songs) async {
+    
+    // Convert the list of songs to a list of TubeTracks
+    List<TubeTrack> tracks = songs
+    .asMap()
+    .entries
+    .map((entry) => TubeTrack(
+        id: 'track${entry.key + 1}', 
+        title: entry.value.songName, 
+        artist: entry.value.artist))
+    .toList();
+
+    // Create a new Playlist object
+    VideoPlaylist playlist =
+        VideoPlaylist(title: title, description: description, tracks: tracks);
+
+    // Convert the Playlist to a JSON string
+    String jsonPlaylist = jsonEncode(playlist.toJson());
+
+     // Print the JSON string to the console
+    print('Sending the following JSON to the server:');
+    print(jsonPlaylist);
+
+    String jsonText = jsonEncode("This is a test");
+
+    /*
+    var response = await http.post(
+      Uri.parse('http://10.0.2.2:3030/log'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonText,
+    );
+    */
+
+    // Send the playlist to the server
+    
+    var response = await http.post(
+      Uri.parse('http://10.0.2.2:3030/playlists'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonPlaylist,
+    );
+    
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, then parse the JSON.
+      print('Playlist created successfully');
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to create playlist: ${response.statusCode}');
+    }
   }
 }
