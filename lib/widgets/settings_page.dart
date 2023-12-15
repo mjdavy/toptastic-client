@@ -91,7 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     }
 
                     // By default, show a loading spinner.
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   },
                 ),
               ),

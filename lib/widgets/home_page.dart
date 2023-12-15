@@ -122,22 +122,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // Convert the Playlist to a JSON string
     String jsonPlaylist = jsonEncode(playlist.toJson());
 
-     // Print the JSON string to the console
-    print('Sending the following JSON to the server:');
-    print(jsonPlaylist);
-
-    String jsonText = jsonEncode("This is a test");
-
-    /*
-    var response = await http.post(
-      Uri.parse('http://10.0.2.2:3030/log'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonText,
-    );
-    */
-
     // Send the playlist to the server
     
     var response = await http.post(

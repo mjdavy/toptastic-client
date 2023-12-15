@@ -5,7 +5,7 @@ class SongList extends StatelessWidget {
   final Function(Song) onTap;
   final Future<List<Song>> songsFuture;
   const SongList(this.songsFuture, this.onTap, {super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -16,6 +16,8 @@ class SongList extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
+          } else if (snapshot.data!.isEmpty) {
+            return const Center(child: Text('No data for this date'));
           } else {
             return ListView.builder(
               padding: const EdgeInsets.all(8),
@@ -29,7 +31,7 @@ class SongList extends StatelessWidget {
                 );
               },
             );
-          } 
+          }
         },
       ),
     );

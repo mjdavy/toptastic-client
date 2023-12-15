@@ -11,6 +11,7 @@ class Song {
   final String peak;
   final String reNew;
   final String weeks;
+  final String videoId;
 
   Song(
       {required this.artist,
@@ -18,7 +19,8 @@ class Song {
       required this.lw,
       required this.peak,
       required this.reNew,
-      required this.weeks});
+      required this.weeks,
+      required this.videoId});
 
   factory Song.fromJson(Map<String, dynamic> json) {
     return Song(
@@ -28,6 +30,7 @@ class Song {
       peak: json['peak'],
       reNew: json['re_new'],
       weeks: json['weeks'],
+      videoId: json.containsKey('video_id') && json['video_id'] != '' ? json['video_id'] : '',
     );
   }
 }
@@ -43,6 +46,6 @@ Future<List<Song>> fetchSongs(DateTime date) async {
     List jsonResponse = json.decode(response.body);
     return jsonResponse.map((item) => Song.fromJson(item)).toList();
   } else {
-    throw Exception('Failed to load songs');
+    return []; // Return an empty list if the server returns a non-200 status code
   }
 }
