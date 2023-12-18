@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'song.dart';
+import 'package:http/http.dart' as http;
+
 class TubeTrack {
   final String id;
   final String title;
@@ -25,3 +29,41 @@ class VideoPlaylist {
     'tracks': tracks.map((track) => track.toJson()).toList(),
   };
 }
+
+Future<void> createPlaylist(
+      String title, String description, List<Song> songs) async {
+    // Convert the list of songs to a list of TubeTracks
+    List<TubeTrack> tracks = songs
+        .asMap()
+        .entries
+        .map((entry) => TubeTrack(
+            id: 'track${entry.key + 1}',
+            title: entry.value.songName,
+            artist: entry.value.artist))
+        .toList();
+
+    // Create a new Playlist object
+    VideoPlaylist playlist =
+        VideoPlaylist(title: title, description: description, tracks: tracks);
+
+    // Convert the Playlist to a JSON string
+    String jsonPlaylist = jsonEncode(playlist.toJson());
+
+    // Send the playlist to the server
+
+    var response = await http.post(
+      Uri.parse('http://10.0.2.2:3030/playlists'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonPlaylist,
+    );
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, then parse the JSON.
+      print('Playlist created successfully');
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to create playlist: ${response.statusCode}');
+    }
+  }

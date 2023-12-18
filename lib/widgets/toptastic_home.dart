@@ -2,13 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
+import '../models/utility.dart';
 import 'settings_page.dart';
 import 'song_list.dart';
-import 'package:http/http.dart' as http;
-import '../models/video_playlist.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+import '../models/video_playlist.dart';
+import 'package:intl/intl.dart';
+
+class TopTasticHome extends StatefulWidget {
+  const TopTasticHome({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -22,10 +24,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  createState() => _TopTasticHomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _TopTasticHomeState extends State<TopTasticHome> {
   var _selectedDate = DateTime.now();
   late Future<List<Song>> _songsFuture;
 
@@ -76,9 +78,22 @@ class _MyHomePageState extends State<MyHomePage> {
               // Assuming _songsFuture is a Future<List<Song>> of YouTube video IDs
               List<Song> songs = await _songsFuture;
 
+              // Find the previous Friday from the selected date
+              DateTime previousFriday = findPreviousFriday(_selectedDate);
+
+              // Format the previous Friday
+              String formattedPreviousFriday =
+                  DateFormat('EEEE, MMMM d, yyyy').format(previousFriday);
+
+              // Get the current date and format it
+              String formattedCurrentDate =
+                  DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
+
               // Call the function to create the playlist
               await createPlaylist(
-                  'Christmas', 'A collection of top songs for December', songs);
+                  'UK Singles Chart - $formattedPreviousFriday',
+                  'Created by Toptastic on $formattedCurrentDate',
+                  songs);
             },
           ),
           IconButton(
@@ -100,45 +115,5 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
-  }
-
-  Future<void> createPlaylist(
-    String title, String description, List<Song> songs) async {
-    
-    // Convert the list of songs to a list of TubeTracks
-    List<TubeTrack> tracks = songs
-    .asMap()
-    .entries
-    .map((entry) => TubeTrack(
-        id: 'track${entry.key + 1}', 
-        title: entry.value.songName, 
-        artist: entry.value.artist))
-    .toList();
-
-    // Create a new Playlist object
-    VideoPlaylist playlist =
-        VideoPlaylist(title: title, description: description, tracks: tracks);
-
-    // Convert the Playlist to a JSON string
-    String jsonPlaylist = jsonEncode(playlist.toJson());
-
-    // Send the playlist to the server
-    
-    var response = await http.post(
-      Uri.parse('http://10.0.2.2:3030/playlists'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonPlaylist,
-    );
-    
-
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, then parse the JSON.
-      print('Playlist created successfully');
-    } else {
-      // If the server returns an unsuccessful response code, throw an exception.
-      throw Exception('Failed to create playlist: ${response.statusCode}');
-    }
   }
 }

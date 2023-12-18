@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:toptastic/widgets/home_page.dart';
+import 'package:toptastic/widgets/toptastic_home.dart';
 import 'dart:io';
 
 void resolveHostname(String hostname) async {
   List<InternetAddress> addresses = await InternetAddress.lookup(hostname);
-  for(var address in addresses){
+  for (var address in addresses) {
     print('IP address: ${address.address}');
   }
 }
@@ -41,8 +41,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'TopTastic'),
+      home: const TopTasticHome(title: 'TopTastic'),
     );
   }
 }
-
