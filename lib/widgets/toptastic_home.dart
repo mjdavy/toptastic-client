@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
 import '../models/utility.dart';
@@ -28,7 +26,7 @@ class TopTasticHome extends StatefulWidget {
 }
 
 class _TopTasticHomeState extends State<TopTasticHome> {
-  var _selectedDate = DateTime.now();
+  var _selectedDate = findPreviousFriday(DateTime.now());
   late Future<List<Song>> _songsFuture;
 
   @override
@@ -45,75 +43,106 @@ class _TopTasticHomeState extends State<TopTasticHome> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            onPressed: () async {
-              final DateTime? pickedDate = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime.now(),
-              );
-              if (pickedDate != null) {
-                setState(() {
-                  _selectedDate = pickedDate;
-                  _songsFuture = fetchSongs(_selectedDate);
-                });
-              }
-            },
+        appBar: AppBar(
+          // TRY THIS: Try changing the color here to a specific color (to
+          // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+          // change color while the other colors stay the same.
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+
+          title: const Text("TopTastic"),
+
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.calendar_today),
+              onPressed: () async {
+                final DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: _selectedDate,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime.now(),
+                );
+                if (pickedDate != null) {
+                  setState(() {
+                    _selectedDate = findPreviousFriday(pickedDate);
+                    _songsFuture = fetchSongs(_selectedDate);
+                  });
+                }
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.playlist_add),
+              onPressed: () async {
+                // Assuming _songsFuture is a Future<List<Song>> of YouTube video IDs
+                List<Song> songs = await _songsFuture;
+
+                // Find the previous Friday from the selected date
+                DateTime previousFriday = findPreviousFriday(_selectedDate);
+
+                // Format the previous Friday
+                String formattedPreviousFriday =
+                    DateFormat('EEEE, MMMM d, yyyy').format(previousFriday);
+
+                // Get the current date and format it
+                String formattedCurrentDate =
+                    DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
+
+                // Call the function to create the playlist
+                await createPlaylist(
+                    'UK Singles Chart - $formattedPreviousFriday',
+                    'Created by Toptastic on $formattedCurrentDate',
+                    songs);
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              },
+            ),
+          ],
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+              Colors.white,
+                Colors.grey,
+              ],
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.playlist_add),
-            onPressed: () async {
-              // Assuming _songsFuture is a Future<List<Song>> of YouTube video IDs
-              List<Song> songs = await _songsFuture;
-
-              // Find the previous Friday from the selected date
-              DateTime previousFriday = findPreviousFriday(_selectedDate);
-
-              // Format the previous Friday
-              String formattedPreviousFriday =
-                  DateFormat('EEEE, MMMM d, yyyy').format(previousFriday);
-
-              // Get the current date and format it
-              String formattedCurrentDate =
-                  DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
-
-              // Call the function to create the playlist
-              await createPlaylist(
-                  'UK Singles Chart - $formattedPreviousFriday',
-                  'Created by Toptastic on $formattedCurrentDate',
-                  songs);
-            },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'UK Singles Chart Top 100',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Text(
+                      DateFormat('EEEE, MMMM d, yyyy').format(_selectedDate),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+              ),
+              SongList(_songsFuture, (Song song) {
+                // Handle song tap
+              }),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsPage()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          SongList(_songsFuture, (Song song) {
-            // Handle song tap
-          }),
-        ],
-      ),
-    );
+        ));
   }
 }
