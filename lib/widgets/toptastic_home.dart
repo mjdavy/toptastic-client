@@ -109,7 +109,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
           ],
         ),
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,

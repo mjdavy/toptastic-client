@@ -25,6 +25,8 @@ class SongList extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   child: ListTile(
+                    leading: Text('${index + 1}',
+                        style: Theme.of(context).textTheme.headlineSmall),
                     title: Text(snapshot.data[index].songName),
                     subtitle: Text(snapshot.data[index].artist),
                   ),
