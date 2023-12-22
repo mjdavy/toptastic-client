@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/song.dart';
 
 class SongList extends StatelessWidget {
@@ -29,6 +30,23 @@ class SongList extends StatelessWidget {
                         style: Theme.of(context).textTheme.headlineSmall),
                     title: Text(snapshot.data[index].songName),
                     subtitle: Text(snapshot.data[index].artist),
+                    trailing: snapshot.data[index].videoId == null ||
+                            snapshot.data[index].videoId.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.video_library),
+                            onPressed: () {
+                              var uri = Uri(
+                                scheme: 'https',
+                                host: 'www.youtube.com',
+                                path: 'watch',
+                                queryParameters: {
+                                  'v': snapshot.data[index].videoId
+                                },
+                              );
+                              launchUrl(uri);
+                            },
+                          ),
                   ),
                 );
               },

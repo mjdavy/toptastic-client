@@ -10,7 +10,7 @@ void resolveHostname(String hostname) async {
 }
 
 void main() {
-  resolveHostname('gthang');
+  //resolveHostname('gthang');
   runApp(const MyApp());
 }
 
