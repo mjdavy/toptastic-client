@@ -115,7 +115,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
               end: Alignment.bottomCenter,
               colors: [
               Colors.white,
-                Colors.grey,
+                Colors.white,
               ],
             ),
           ),
