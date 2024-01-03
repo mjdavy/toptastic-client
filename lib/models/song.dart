@@ -7,10 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Song {
   final String artist;
   final String songName;
-  final String lw;
-  final String peak;
-  final String reNew;
-  final String weeks;
+  final int lw;
+  final int peak;
+  final bool isNew;
+  final bool isReentry;
+  final int weeks;
   final String videoId;
 
   Song(
@@ -18,7 +19,8 @@ class Song {
       required this.songName,
       required this.lw,
       required this.peak,
-      required this.reNew,
+      required this.isNew,
+      required this.isReentry,
       required this.weeks,
       required this.videoId});
 
@@ -28,7 +30,8 @@ class Song {
       songName: json['song_name'],
       lw: json['lw'],
       peak: json['peak'],
-      reNew: json['re_new'],
+      isNew: json['is_new'],
+      isReentry: json['is_reentry'],
       weeks: json['weeks'],
       videoId: json.containsKey('video_id') &&
               json['video_id'] != null &&

@@ -6,14 +6,16 @@ class TubeTrack {
   final String id;
   final String title;
   final String artist;
+  final String? videoId;
 
-  TubeTrack({required this.id, required this.title, required this.artist});
+  TubeTrack({required this.id, required this.title, this.videoId, required this.artist});
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'artist': artist,
-  };
+        'id': id,
+        'title': title,
+        'artist': artist,
+        'videoId': videoId ?? '',
+      };
 }
 
 class VideoPlaylist {
@@ -21,49 +23,52 @@ class VideoPlaylist {
   final String description;
   final List<TubeTrack> tracks;
 
-  VideoPlaylist({required this.title, required this.description, required this.tracks});
+  VideoPlaylist(
+      {required this.title, required this.description, required this.tracks});
 
   Map<String, dynamic> toJson() => {
-    'title': title,
-    'description': description,
-    'tracks': tracks.map((track) => track.toJson()).toList(),
-  };
+        'title': title,
+        'description': description,
+        'tracks': tracks.map((track) => track.toJson()).toList(),
+      };
 }
 
 Future<void> createPlaylist(
-      String title, String description, List<Song> songs) async {
-    // Convert the list of songs to a list of TubeTracks
-    List<TubeTrack> tracks = songs
-        .asMap()
-        .entries
-        .map((entry) => TubeTrack(
-            id: 'track${entry.key + 1}',
-            title: entry.value.songName,
-            artist: entry.value.artist))
-        .toList();
+  String title, String description, List<Song> songs) async {
+  // Convert the list of songs to a list of TubeTracks
+  List<TubeTrack> tracks = songs
+      .asMap()
+      .entries
+      .map((entry) => TubeTrack(
+          id: 'track${entry.key + 1}',
+          title: entry.value.songName,
+          artist: entry.value.artist,
+          videoId: entry.value.videoId)
+      )
+      .toList();
 
-    // Create a new Playlist object
-    VideoPlaylist playlist =
-        VideoPlaylist(title: title, description: description, tracks: tracks);
+  // Create a new Playlist object
+  VideoPlaylist playlist =
+      VideoPlaylist(title: title, description: description, tracks: tracks);
 
-    // Convert the Playlist to a JSON string
-    String jsonPlaylist = jsonEncode(playlist.toJson());
+  // Convert the Playlist to a JSON string
+  String jsonPlaylist = jsonEncode(playlist.toJson());
 
-    // Send the playlist to the server
+  // Send the playlist to the server
 
-    var response = await http.post(
-      Uri.parse('http://10.0.2.2:3030/playlists'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonPlaylist,
-    );
+  var response = await http.post(
+    Uri.parse('http://10.0.2.2:3030/playlists'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonPlaylist,
+  );
 
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, then parse the JSON.
-      print('Playlist created successfully');
-    } else {
-      // If the server returns an unsuccessful response code, throw an exception.
-      throw Exception('Failed to create playlist: ${response.statusCode}');
-    }
+  if (response.statusCode == 200) {
+    // If the server returns a 200 OK response, then parse the JSON.
+    print('Playlist created successfully');
+  } else {
+    // If the server returns an unsuccessful response code, throw an exception.
+    throw Exception('Failed to create playlist: ${response.statusCode}');
   }
+}
