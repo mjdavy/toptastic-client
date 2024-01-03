@@ -3,7 +3,6 @@ import 'package:toptastic/models/song.dart';
 import '../models/utility.dart';
 import 'settings_page.dart';
 import 'song_list.dart';
-
 import '../models/video_playlist.dart';
 import 'package:intl/intl.dart';
 
@@ -32,7 +31,20 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   @override
   void initState() {
     super.initState();
-    _songsFuture = fetchSongs(_selectedDate);
+    _loadSongs();
+  }
+
+  Future<void> _loadSongs() async {
+    try {
+      _songsFuture = fetchSongs(_selectedDate);
+    } on ServerNotConfiguredException {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsPage()),
+      );
+    } on FetchSongsException {
+      // Handle fetch songs error
+    }
   }
 
   @override
@@ -91,6 +103,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                     DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
 
                 // Call the function to create the playlist
+               
                 await createPlaylist(
                     'UK Singles Chart - $formattedPreviousFriday',
                     'Created by Toptastic on $formattedCurrentDate',

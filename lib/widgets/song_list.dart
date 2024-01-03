@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/song.dart';
+import 'settings_page.dart';
 import 'song_item.dart';
 
 class SongList extends StatelessWidget {
@@ -17,7 +18,17 @@ class SongList extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            if (snapshot.error is ServerNotConfiguredException) {
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              });
+              return const SizedBox.shrink();
+            } else {
+              return Text('Error: ${snapshot.error}');
+            }
           } else if (snapshot.data!.isEmpty) {
             return const Center(child: Text('No data for this date'));
           } else {

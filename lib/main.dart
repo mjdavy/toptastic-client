@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:toptastic/widgets/toptastic_home.dart';
-import 'dart:io';
-
-void resolveHostname(String hostname) async {
-  List<InternetAddress> addresses = await InternetAddress.lookup(hostname);
-  for (var address in addresses) {
-    print('IP address: ${address.address}');
-  }
-}
 
 void main() {
   //resolveHostname('gthang');

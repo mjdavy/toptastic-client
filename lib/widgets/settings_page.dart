@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+final logger = Logger();
+
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
   createState() => _SettingsPageState();
@@ -12,6 +17,11 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final _formKey = GlobalKey<FormState>();
   final _serverController = TextEditingController();
+  final _portController = TextEditingController();
+
+  String _serverUrl = '';
+  String _serverStatus = '';
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -19,28 +29,61 @@ class _SettingsPageState extends State<SettingsPage> {
     _loadServerUrl();
   }
 
+  Future<String?> resolveHostname(String hostname) async {
+    try {
+      List<InternetAddress> addresses = await InternetAddress.lookup(hostname);
+      return addresses.first.address;
+    } catch (e) {
+      logger.e('Error resolving hostname: $e');
+      return null;
+    }
+  }
+
   Future<void> _loadServerUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    _serverController.text = prefs.getString('serverUrl') ?? '';
+    setState(() {
+      _serverUrl = prefs.getString('serverName') ?? 'localhost';
+      _serverController.text = _serverUrl;
+      _portController.text = prefs.getString('port') ?? '8080';
+    });
   }
 
   Future<void> _saveServerUrl() async {
     if (_formKey.currentState?.validate() ?? false) {
       final prefs = await SharedPreferences.getInstance();
-      prefs.setString('serverUrl', _serverController.text);
+      prefs.setString('serverName', _serverController.text);
+      prefs.setString('port', _portController.text);
+      setState(() {
+        _serverUrl = _serverController.text;
+      });
+      await getServerStatus();
     }
   }
 
   Future<String> getServerStatus() async {
-    var response = await http.get(Uri.parse('http://10.0.2.2:3030/status'));
+    setState(() {
+      _isLoading = true;
+    });
 
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, return the response body.
-      return response.body;
-    } else {
-      // If the server returns an unsuccessful response code, throw an exception.
-      throw Exception('Failed to get server status');
+    String? ipAddress = await resolveHostname(_serverUrl);
+    if (ipAddress != null) {
+      String url = 'http://$ipAddress:${_portController.text}/status';
+      var response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _serverStatus = response.body;
+          _isLoading = false;
+        });
+        return _serverStatus;
+      }
     }
+
+    setState(() {
+      _serverStatus = 'Failed to get server status';
+      _isLoading = false;
+    });
+    throw Exception(_serverStatus);
   }
 
   @override
@@ -58,46 +101,41 @@ class _SettingsPageState extends State<SettingsPage> {
               TextFormField(
                 controller: _serverController,
                 decoration: const InputDecoration(
-                  labelText: 'Song Server URL',
+                  labelText: 'Server Hostname',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the server URL';
+                    return 'Please enter the server hostname';
                   }
                   return null;
                 },
               ),
               TextFormField(
-                controller: _serverController,
+                controller: _portController,
                 decoration: const InputDecoration(
-                  labelText: 'Video Playlist Server URL',
+                  labelText: 'Server Port',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the server URL';
+                    return 'Please enter the server port';
                   }
                   return null;
                 },
               ),
-              Expanded(
-                child: FutureBuilder<String>(
-                  future: getServerStatus(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.hasData) {
-                      return Text('Video Server Status: ${snapshot.data}');
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-
-                    // By default, show a loading spinner.
-                    return const CircularProgressIndicator();
-                  },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: _saveServerUrl,
+                  child: const Text('Save'),
                 ),
               ),
-              ElevatedButton(
-                onPressed: _saveServerUrl,
-                child: const Text('Save'),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _serverStatus.isNotEmpty
+                        ? Text('Server Status: $_serverStatus')
+                        : const Text('Getting server status'),
               ),
             ],
           ),

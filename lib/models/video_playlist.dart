@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'song.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class TubeTrack {
   final String id;
@@ -66,7 +69,7 @@ Future<void> createPlaylist(
 
   if (response.statusCode == 200) {
     // If the server returns a 200 OK response, then parse the JSON.
-    print('Playlist created successfully');
+    logger.i('Playlist created successfully');
   } else {
     // If the server returns an unsuccessful response code, throw an exception.
     throw Exception('Failed to create playlist: ${response.statusCode}');

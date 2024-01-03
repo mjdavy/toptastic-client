@@ -1,3 +1,4 @@
+
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -42,19 +43,43 @@ class Song {
   }
 }
 
+enum FetchSongsResult {
+  success,
+  serverNotConfigured,
+  error,
+}
+
+class ServerNotConfiguredException implements Exception {
+  final String message;
+
+  ServerNotConfiguredException(this.message);
+}
+
+class FetchSongsException implements Exception {
+  final String message;
+
+  FetchSongsException(this.message);
+}
+
 Future<List<Song>> fetchSongs(DateTime date) async {
   final String formattedDate = DateFormat('yyyyMMdd').format(date);
   final prefs = await SharedPreferences.getInstance();
-  final serverUrl =
-      prefs.getString('serverUrl') ?? 'http://10.0.2.2:5000/api/songs';
-  var uri = Uri.parse("$serverUrl/$formattedDate");
-  final response = await http.get(uri);
+  final serverName = prefs.getString('serverName');
+  final port = prefs.getString('port');
+
+  if (serverName == null || port == null) {
+    throw ServerNotConfiguredException('Server is not configured');
+  }
+
+  final serverUrl = 'http://$serverName:$port/api/songs';
+  final url = '$serverUrl/$formattedDate';
+  final response = await http.get(Uri.parse(url));
 
   if (response.statusCode == 200) {
     List jsonResponse = json.decode(response.body);
     var songs = jsonResponse.map((item) => Song.fromJson(item)).toList();
     return songs;
   } else {
-    return []; // Return an empty list if the server returns a non-200 status code
+    throw FetchSongsException('Error fetching songs');
   }
 }
