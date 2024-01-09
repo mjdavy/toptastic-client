@@ -42,9 +42,9 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadServerUrl() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _serverUrl = prefs.getString('serverName') ?? 'localhost';
+      _serverUrl = prefs.getString('serverName') ?? 'Ronald.local';
       _serverController.text = _serverUrl;
-      _portController.text = prefs.getString('port') ?? '8080';
+      _portController.text = prefs.getString('port') ?? '5001';
     });
   }
 
@@ -135,7 +135,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ? const Center(child: CircularProgressIndicator())
                     : _serverStatus.isNotEmpty
                         ? Text('Server Status: $_serverStatus')
-                        : const Text('Getting server status'),
+                        : const Text(''),
               ),
             ],
           ),

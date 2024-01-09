@@ -9,12 +9,55 @@ class SongPositionIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final IconData iconData = determineIconData(position, song);
+    final Color iconColor = determineIconColor(position, song);
+
     return Column(
       children: <Widget>[
-        Flexible(child: Text('$position', style: Theme.of(context).textTheme.headlineLarge)),
-        const Icon(Icons.arrow_upward), // for an upward arrow
-        // Icon(Icons.arrow_downward), // for a downward arrow
+        Flexible(
+          child: Text(
+              '$position',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+        ),
+        const SizedBox(height: 2),
+        Flexible(
+          child: Icon(
+              iconData,
+              color: iconColor,
+              size: Theme.of(context).textTheme.headlineSmall?.fontSize,
+            ),
+        ),
+
       ],
     );
+  }
+
+  IconData determineIconData(int position, Song song) {
+    if (song.isNew) {
+      return Icons.fiber_new;
+    } else if (song.isReentry) {
+      return Icons.refresh;
+    } else if (position < song.lw) {
+      return Icons.arrow_upward;
+    } else if (position > song.lw) {
+      return Icons.arrow_downward;
+    } else {
+      return Icons.horizontal_rule;
+    }
+  }
+
+  Color determineIconColor(int position, Song song) {
+    if (song.isNew) {
+      return Colors.green;
+    } else if (song.isReentry) {
+      return Colors.orange;
+    } else if (position > song.lw) {
+      return Colors.red;
+    } else if (position < song.lw) {
+      return Colors.blue;
+    } else {
+      return Colors.grey;
+    }
   }
 }
