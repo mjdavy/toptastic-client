@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'song.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
@@ -38,6 +40,17 @@ class VideoPlaylist {
 
 Future<void> createPlaylist(
   String title, String description, List<Song> songs) async {
+
+  final prefs = await SharedPreferences.getInstance();
+  final serverName = prefs.getString('serverName');
+  final port = prefs.getString('port');
+
+  if (serverName == null || port == null) {
+    throw ServerNotConfiguredException('Server is not configured');
+  }
+
+  final serverUrl = 'http://$serverName:$port/api/create_playlist';
+
   // Convert the list of songs to a list of TubeTracks
   List<TubeTrack> tracks = songs
       .asMap()
@@ -60,7 +73,7 @@ Future<void> createPlaylist(
   // Send the playlist to the server
 
   var response = await http.post(
-    Uri.parse('http://10.0.2.2:3030/playlists'),
+    Uri.parse(serverUrl),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
