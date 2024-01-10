@@ -13,7 +13,7 @@ class Song {
   final bool isNew;
   final bool isReentry;
   final int weeks;
-  final String videoId;
+  String videoId;
 
   Song(
       {required this.artist,
@@ -40,6 +40,10 @@ class Song {
           ? json['video_id']
           : '',
     );
+  }
+
+  void updateVideoId(String newVideoId) {
+    videoId = newVideoId;
   }
 }
 

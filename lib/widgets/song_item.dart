@@ -15,8 +15,8 @@ class SongItem extends StatelessWidget {
           child: ListTile(
             leading: SongPositionIndicator(position, song),
             title: Text(
-            song.songName,
-            style: Theme.of(context).textTheme.titleMedium),
+              song.songName,
+              style: Theme.of(context).textTheme.titleMedium),
             subtitle: Text(song.artist),
             trailing: song.videoId.isEmpty ? null
                 : IconButton(

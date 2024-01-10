@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
 import '../models/utility.dart';
+import 'playlist_edit_screen.dart';
 import 'settings_page.dart';
 import 'song_list.dart';
-import '../models/video_playlist.dart';
 import 'package:intl/intl.dart';
 
 class TopTasticHome extends StatefulWidget {
@@ -87,27 +87,26 @@ class _TopTasticHomeState extends State<TopTasticHome> {
             ),
             IconButton(
               icon: const Icon(Icons.playlist_add),
-              onPressed: () async {
-                // Assuming _songsFuture is a Future<List<Song>> of YouTube video IDs
-                List<Song> songs = await _songsFuture;
-
-                // Find the previous Friday from the selected date
+              onPressed: ()  {
+  
                 DateTime previousFriday = findPreviousFriday(_selectedDate);
-
-                // Format the previous Friday
                 String formattedPreviousFriday =
                     DateFormat('EEEE, MMMM d, yyyy').format(previousFriday);
-
-                // Get the current date and format it
                 String formattedCurrentDate =
                     DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
 
-                // Call the function to create the playlist
-               
-                await createPlaylist(
-                    'UK Singles Chart - $formattedPreviousFriday',
-                    'Created by Toptastic on $formattedCurrentDate',
-                    songs);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaylistEditScreen(
+                      playlistTitle:
+                          'UK Singles Chart - $formattedPreviousFriday',
+                      playlistDescription:
+                          'Created by Toptastic on $formattedCurrentDate',
+                      songsFuture: _songsFuture,
+                    ),
+                  ),
+                );
               },
             ),
             IconButton(
@@ -127,7 +126,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-              Colors.white,
+                Colors.white,
                 Colors.white,
               ],
             ),
