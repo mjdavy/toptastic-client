@@ -65,7 +65,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
               ),
             ),
             const SizedBox(height: 16.0),
-            YoutubeThumbnail(widget.song.videoId),
+            YoutubeThumbnail(widget.song),
           ],
         ),
       ),

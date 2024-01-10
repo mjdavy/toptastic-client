@@ -102,7 +102,7 @@ class _PlaylistEditScreenState extends State<PlaylistEditScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: YoutubeThumbnail(song.videoId),
+                      leading: YoutubeThumbnail(song),
                       title: Text(song.songName,
                           style: Theme.of(context).textTheme.titleMedium),
                       subtitle: Text(song.artist),
