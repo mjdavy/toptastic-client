@@ -95,7 +95,13 @@ class _PlaylistEditScreenState extends State<PlaylistEditScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SongDetailScreen(song: song),
+                      builder: (context) => SongDetailScreen(
+                        song: song,
+                        onVideoIdUpdated: (updatedVideoId) {
+                          // Handle the updated video ID
+                          setState(() {});
+                        },
+                      ),
                     ),
                   );
                 },
