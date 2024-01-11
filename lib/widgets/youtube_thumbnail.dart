@@ -45,7 +45,9 @@ class _YoutubeThumbnailState extends State<YoutubeThumbnail> {
             context,
             MaterialPageRoute(
               builder: (context) => Scaffold(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                 appBar: AppBar(
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                   title: Text('${widget.song.songName} - ${widget.song.artist}',
                       style: Theme.of(context).textTheme.titleMedium),
                 ),

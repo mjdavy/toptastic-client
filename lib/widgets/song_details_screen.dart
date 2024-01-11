@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 import '../models/song.dart';
@@ -67,6 +68,20 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     });
   }
 
+  void openYoutube() async {
+    final artist = widget.song.artist;
+    final title = widget.song.songName;
+    final query = '$artist $title';
+
+    final url = Uri.parse('https://www.youtube.com/results?search_query=$query');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,9 +113,18 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
               ),
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: searchVideos,
-              child: const Text('Search Videos'),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: searchVideos,
+                  child: const Text('Search Videos'),
+                ),
+                const SizedBox(width: 8.0),
+                IconButton(
+                  onPressed: openYoutube,
+                  icon: const Icon(Icons.video_library, color: Colors.red),
+                ),
+              ],
             ),
             const SizedBox(height: 16.0),
             if (_isLoading)
