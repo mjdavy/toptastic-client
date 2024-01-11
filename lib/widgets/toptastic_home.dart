@@ -89,20 +89,17 @@ class _TopTasticHomeState extends State<TopTasticHome> {
               icon: const Icon(Icons.playlist_add),
               onPressed: ()  {
   
-                DateTime previousFriday = findPreviousFriday(_selectedDate);
-                String formattedPreviousFriday =
-                    DateFormat('EEEE, MMMM d, yyyy').format(previousFriday);
-                String formattedCurrentDate =
-                    DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
+                String formattedDate =
+                    DateFormat('EEEE, MMMM d, yyyy').format(_selectedDate);
 
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => PlaylistEditScreen(
                       playlistTitle:
-                          'UK Singles Chart - $formattedPreviousFriday',
+                          'UK Singles Chart - $formattedDate',
                       playlistDescription:
-                          'Created by Toptastic on $formattedCurrentDate',
+                          'Created by Toptastic on $formattedDate',
                       songsFuture: _songsFuture,
                     ),
                   ),

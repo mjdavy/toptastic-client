@@ -15,17 +15,19 @@ class SongPositionIndicator extends StatelessWidget {
     return Column(
       children: <Widget>[
         Flexible(
+          fit: FlexFit.tight,
           child: Text(
               '$position',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
         ),
-        const SizedBox(height: 2),
+        //const SizedBox(height: 2),
         Flexible(
+          fit: FlexFit.tight,
           child: Icon(
               iconData,
               color: iconColor,
-              size: Theme.of(context).textTheme.headlineSmall?.fontSize,
+              size: Theme.of(context).textTheme.titleLarge?.fontSize,
             ),
         ),
 
