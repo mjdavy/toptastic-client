@@ -4,7 +4,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../models/song.dart';
 
 class YoutubeThumbnail extends StatefulWidget {
-  const YoutubeThumbnail(this.song, {Key? key}) : super(key: key);
+  const YoutubeThumbnail(this.song, {super.key});
 
   final Song song;
 

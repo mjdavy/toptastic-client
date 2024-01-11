@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 final logger = Logger();
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   createState() => _SettingsPageState();

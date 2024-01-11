@@ -8,7 +8,7 @@ class SongItem extends StatelessWidget {
   final Song song;
   final int position;
 
-  const SongItem(this.position, this.song, {Key? key}) : super(key: key);
+  const SongItem(this.position, this.song, {super.key});
 
   @override
   Widget build(BuildContext context) {
