@@ -14,6 +14,7 @@ class Song {
   final bool isReentry;
   final int weeks;
   String videoId;
+  bool hasChanges = false;
 
   Song(
       {required this.artist,
@@ -44,6 +45,7 @@ class Song {
 
   void updateVideoId(String newVideoId) {
     videoId = newVideoId;
+    hasChanges = true;
   }
 }
 

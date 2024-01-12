@@ -12,7 +12,7 @@ class SongList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: FutureBuilder<List<dynamic>>(
+      child: FutureBuilder<List<Song>>(
         future: songsFuture,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -32,12 +32,12 @@ class SongList extends StatelessWidget {
           } else if (snapshot.data!.isEmpty) {
             return const Center(child: Text('No data for this date'));
           } else {
-            var songs = snapshot.data as List<Song>;
+            var songs = snapshot.data;
             return ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) => SongItem(index +1, songs[index])
-            );
+                padding: const EdgeInsets.all(8),
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    SongItem(index + 1, songs[index]));
           }
         },
       ),

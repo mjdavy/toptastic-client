@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
+import 'package:toptastic/models/video_playlist.dart';
 import '../models/utility.dart';
 import 'playlist_edit_screen.dart';
 import 'settings_page.dart';
@@ -25,6 +26,8 @@ class TopTasticHome extends StatefulWidget {
 }
 
 class _TopTasticHomeState extends State<TopTasticHome> {
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
   var _selectedDate = findPreviousFriday(DateTime.now());
   late Future<List<Song>> _songsFuture;
 
@@ -47,6 +50,18 @@ class _TopTasticHomeState extends State<TopTasticHome> {
     }
   }
 
+  _saveChanges() async {
+    final List<Song> songs = await _songsFuture;
+    final updated = await updateVideos(songs);
+
+    _scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text('Updated $updated videos'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -67,7 +82,8 @@ class _TopTasticHomeState extends State<TopTasticHome> {
 
           title: const Text("TopTastic"),
 
-          actions: <Widget>[
+          actions: [
+            // This is the button that will open the DatePicker to choose a playlist date
             IconButton(
               icon: const Icon(Icons.calendar_today),
               onPressed: () async {
@@ -85,10 +101,19 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                 }
               },
             ),
+
+            // This is the button that will save the changes to video IDs
+            IconButton(
+              onPressed: () => {
+                _saveChanges(),
+              },
+              icon: const Icon(Icons.save),
+            ),
+
+            // This is the button that will open the PlaylistEditScreen
             IconButton(
               icon: const Icon(Icons.playlist_add),
-              onPressed: ()  {
-  
+              onPressed: () {
                 String formattedDate =
                     DateFormat('EEEE, MMMM d, yyyy').format(_selectedDate);
 
@@ -96,8 +121,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => PlaylistEditScreen(
-                      playlistTitle:
-                          'UK Singles Chart - $formattedDate',
+                      playlistTitle: 'UK Singles Chart - $formattedDate',
                       playlistDescription:
                           'Created by Toptastic on $formattedDate',
                       songsFuture: _songsFuture,
@@ -106,6 +130,8 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                 );
               },
             ),
+
+            // This is the button that will open the SettingsPage
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
