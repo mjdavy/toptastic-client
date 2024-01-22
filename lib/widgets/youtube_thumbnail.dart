@@ -1,80 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:toptastic/models/song.dart';
+import 'youtube_player_screen.dart';
 
-import '../models/song.dart';
-
-class YoutubeThumbnail extends StatefulWidget {
+class YoutubeThumbnail extends StatelessWidget {
   const YoutubeThumbnail(this.song, {super.key});
 
   final Song song;
 
   @override
-  createState() => _YoutubeThumbnailState();
-}
-
-class _YoutubeThumbnailState extends State<YoutubeThumbnail> {
-  late YoutubePlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = YoutubePlayerController(
-      initialVideoId: widget.song.videoId,
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-        enableCaption: false,
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => YoutubePlayerScreen(song: song),
+          ),
+        );
+      },
+      child: Image.network(
+        'https://img.youtube.com/vi/${song.videoId}/0.jpg',
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return const Icon(Icons.video_library);
+        },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.song.videoId.isEmpty) {
-      return const Icon(Icons.video_library);
-    } else {
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Scaffold(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                appBar: AppBar(
-                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                  title: Text('${widget.song.songName} - ${widget.song.artist}',
-                      style: Theme.of(context).textTheme.titleMedium),
-                ),
-                body: YoutubePlayer(
-                  controller: _controller,
-                  showVideoProgressIndicator: true,
-                  progressIndicatorColor: Colors.blueAccent,
-                  progressColors: const ProgressBarColors(
-                    playedColor: Colors.blue,
-                    handleColor: Colors.blueAccent,
-                  ),
-                ),
-              ),
-            ),
-          ).then((value) {
-            // This code will execute when returning from the video playback screen
-            // You can add any necessary logic here
-          });
-        },
-        child: Image.network(
-          'https://img.youtube.com/vi/${widget.song.videoId}/0.jpg',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return const Icon(Icons.video_library);
-          },
-        ),
-      );
-    }
   }
 }
