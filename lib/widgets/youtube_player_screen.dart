@@ -3,12 +3,12 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../models/song.dart';
 
 class YoutubePlayerScreen extends StatefulWidget {
-  const YoutubePlayerScreen({Key? key, required this.song}) : super(key: key);
+  const YoutubePlayerScreen({super.key, required this.song});
 
   final Song song;
 
   @override
-  _YoutubePlayerScreenState createState() => _YoutubePlayerScreenState();
+    createState() => _YoutubePlayerScreenState();
 }
 
 class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
@@ -26,15 +26,6 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
         enableCaption: false,
       ),
     );
-    _controller.addListener(() {
-      _controller.value.isFullScreen
-          ? setState(() {
-              _showAppBar = false;
-            })
-          : setState(() {
-              _showAppBar = true;
-            });
-    });
   }
 
   @override
@@ -49,14 +40,27 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
       appBar: _showAppBar ? AppBar(
         title: Text('${widget.song.songName} - ${widget.song.artist}'),
       ) : null,
-      body: YoutubePlayer(
-        controller: _controller,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: Colors.blueAccent,
-        progressColors: const ProgressBarColors(
-          playedColor: Colors.blue,
-          handleColor: Colors.blueAccent,
+      body: YoutubePlayerBuilder(
+        player: YoutubePlayer(
+          controller: _controller,
+          showVideoProgressIndicator: true,
+          progressIndicatorColor: Colors.blueAccent,
+          progressColors: const ProgressBarColors(
+            playedColor: Colors.blue,
+            handleColor: Colors.blueAccent,
+          ),
         ),
+        builder: (context, player) {
+          return Column(
+            children: [
+              // some widgets
+              player,
+              //some other widgets
+            ],
+          );
+        },
+        onEnterFullScreen: () => setState(() => _showAppBar = false),
+        onExitFullScreen: () => setState(() => _showAppBar = true),
       ),
     );
   }
