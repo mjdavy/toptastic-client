@@ -3,12 +3,12 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../models/song.dart';
 
 class YoutubePlayerScreen extends StatefulWidget {
-  const YoutubePlayerScreen({Key? key, required this.song}) : super(key: key);
+  const YoutubePlayerScreen({super.key, required this.song});
 
   final Song song;
 
   @override
-  _YoutubePlayerScreenState createState() => _YoutubePlayerScreenState();
+  createState() => _YoutubePlayerScreenState();
 }
 
 class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
