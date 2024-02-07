@@ -46,23 +46,29 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _validateSettings() async {
     String? ipAddress = await resolveHostname(_serverController.text);
     if (ipAddress == null) {
-      setState(() {
-        _offlineMode = true;
-        _serverStatus = 'Unable to resolve hostname';
-      });
+      if (mounted) {
+        setState(() {
+          _offlineMode = true;
+          _serverStatus = 'Unable to resolve hostname';
+        });
+      }
       return;
     }
 
     try {
       await getServerStatus(_serverController.text, _portController.text);
-      setState(() {
-        _serverStatus = 'Server is online';
-      });
+      if (mounted) {
+        setState(() {
+          _serverStatus = 'Server is online';
+        });
+      }
     } catch (e) {
-      setState(() {
-        _offlineMode = true;
-        _serverStatus = 'Server is offline';
-      });
+      if (mounted) {
+        setState(() {
+          _offlineMode = true;
+          _serverStatus = 'Server is offline';
+        });
+      }
     }
   }
 

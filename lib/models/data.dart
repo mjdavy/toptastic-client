@@ -10,7 +10,8 @@ import 'song.dart';
 
 final logger = Logger();
 
-const String databaseURL = 'https://raw.githubusercontent.com/mjdavy/toptastic-client/main/songs.db'; // Replace with your database URL
+const String databaseURL =
+    'https://raw.githubusercontent.com/mjdavy/toptastic-client/main/songs.db';
 
 enum FetchSongsResult {
   success,
@@ -31,7 +32,6 @@ class FetchSongsException implements Exception {
 }
 
 Future<void> downloadDatabase(String dbPath) async {
-
   var response = await http.get(Uri.parse(databaseURL));
   if (response.statusCode == 200) {
     var bytes = response.bodyBytes;
@@ -50,10 +50,10 @@ Future<bool> shouldDownloadDatabase(String path) async {
   } else {
     try {
       var response = await http.head(Uri.parse(databaseURL));
-      if (response.headers.containsKey('last-modified')) {
-        DateTime remoteFileLastModified = DateTime.parse(response.headers['last-modified']!);
-        DateTime localFileLastModified = await databaseFile.lastModified();
-        if (remoteFileLastModified.isAfter(localFileLastModified)) {
+      if (response.headers.containsKey('content-length')) {
+        int remoteFileLength = int.parse(response.headers['content-length']!);
+        int localFileLength = await databaseFile.length();
+        if (remoteFileLength != localFileLength) {
           return true;
         }
       }
@@ -130,13 +130,20 @@ Future<List<Song>> fetchSongsOnline(DateTime date) async {
 
   final serverUrl = 'http://$serverName:$port/api/songs';
   final url = '$serverUrl/$formattedDate';
-  final response = await http.get(Uri.parse(url));
+  try {
+    final response = await http.get(Uri.parse(url));
 
-  if (response.statusCode == 200) {
-    List jsonResponse = json.decode(response.body);
-    var songs = jsonResponse.map((item) => Song.fromJson(item)).toList();
-    return songs;
-  } else {
-    throw FetchSongsException('Error fetching songs');
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      var songs = jsonResponse.map((item) => Song.fromJson(item)).toList();
+      return songs;
+    } else {
+      throw FetchSongsException(
+          'Error fetching songs. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('offlineMode', true);
+    return await fetchSongsOffline(date);
   }
 }
