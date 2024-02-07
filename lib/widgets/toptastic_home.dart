@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
 import 'package:toptastic/models/video_playlist.dart';
+import '../models/data.dart';
 import '../models/utility.dart';
 import 'playlist_edit_screen.dart';
 import 'settings_page.dart';
@@ -45,8 +46,13 @@ class _TopTasticHomeState extends State<TopTasticHome> {
         context,
         MaterialPageRoute(builder: (context) => const SettingsPage()),
       );
-    } on FetchSongsException {
-      // Handle fetch songs error
+    } on FetchSongsException catch (e) {
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(e.message), // Display the error message
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -100,14 +106,6 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                   });
                 }
               },
-            ),
-
-            // This is the button that will save the changes to video IDs
-            IconButton(
-              onPressed: () => {
-                _saveChanges(),
-              },
-              icon: const Icon(Icons.save),
             ),
 
             // This is the button that will open the PlaylistEditScreen
