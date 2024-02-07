@@ -81,7 +81,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 leading: const Icon(Icons.dns),
                 title: const Text('Host Name'),
                 value: SizedBox(
-                  width: 400, // Adjust this value as needed
+                  width: 200, // Adjust this value as needed
                   child: TextField(
                     maxLength: 253,
                     controller: _serverController,
@@ -100,7 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 leading: const Icon(Icons.portrait),
                 title: const Text('Port'),
                 value: SizedBox(
-                  width: 400, // Adjust this value as needed
+                  width: 200, // Adjust this value as needed
                   child: TextField(
                     maxLength: 5,
                     controller: _portController,

@@ -108,14 +108,6 @@ class _TopTasticHomeState extends State<TopTasticHome> {
               },
             ),
 
-            // This is the button that will save the changes to video IDs
-            IconButton(
-              onPressed: () => {
-                _saveChanges(),
-              },
-              icon: const Icon(Icons.save),
-            ),
-
             // This is the button that will open the PlaylistEditScreen
             IconButton(
               icon: const Icon(Icons.playlist_add),
