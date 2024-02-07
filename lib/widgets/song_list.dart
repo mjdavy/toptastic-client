@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../models/data.dart';
 import '../models/song.dart';
 import 'settings_page.dart';
 import 'song_item.dart';
@@ -26,8 +26,11 @@ class SongList extends StatelessWidget {
                 );
               });
               return const SizedBox.shrink();
+            }
+            if (snapshot.error is FetchSongsException) {
+              return Text((snapshot.error as FetchSongsException).message);
             } else {
-              return Text('Error: ${snapshot.error}');
+              return const Text('An unknown error occurred');
             }
           } else if (snapshot.data!.isEmpty) {
             return const Center(child: Text('No data for this date'));

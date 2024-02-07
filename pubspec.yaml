@@ -42,7 +42,9 @@ dependencies:
   logger: ^2.0.2+1
   youtube_player_flutter: ^8.1.2
   youtube_explode_dart: ^2.0.4
-  path_provider: ^2.1.2
+  sqflite: ^2.3.2
+  path: ^1.8.3
+  settings_ui: ^2.0.2
   
 
 dev_dependencies:
