@@ -40,7 +40,7 @@ class SongList extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) =>
-                    SongItem(index + 1, songs[index]));
+                    SongItem(songs[index]));
           }
         },
       ),

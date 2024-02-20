@@ -3,7 +3,6 @@ import 'package:toptastic/models/song.dart';
 import 'package:toptastic/models/video_playlist.dart';
 import '../models/data.dart';
 import '../models/utility.dart';
-import 'playlist_edit_screen.dart';
 import 'settings_page.dart';
 import 'song_list.dart';
 import 'package:intl/intl.dart';
@@ -56,6 +55,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
     }
   }
 
+  // ignore: unused_element
   _saveChanges() async {
     final List<Song> songs = await _songsFuture;
     final updated = await updateVideos(songs);
@@ -105,38 +105,6 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                     _songsFuture = fetchSongs(_selectedDate);
                   });
                 }
-              },
-            ),
-
-            // This is the button that will open the PlaylistEditScreen
-            IconButton(
-              icon: const Icon(Icons.playlist_add),
-              onPressed: () {
-                String formattedDate =
-                    DateFormat('EEEE, MMMM d, yyyy').format(_selectedDate);
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PlaylistEditScreen(
-                      playlistTitle: 'UK Singles Chart - $formattedDate',
-                      playlistDescription:
-                          'Created by Toptastic on $formattedDate',
-                      songsFuture: _songsFuture,
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            // This is the button that will open the SettingsPage
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
               },
             ),
           ],

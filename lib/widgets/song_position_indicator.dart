@@ -3,21 +3,20 @@ import '../models/song.dart';
 
 class SongPositionIndicator extends StatelessWidget {
   final Song song;
-  final int position;
 
-  const SongPositionIndicator(this.position, this.song, {super.key});
+  const SongPositionIndicator(this.song, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    final IconData iconData = determineIconData(position, song);
-    final Color iconColor = determineIconColor(position, song);
+    final IconData iconData = determineIconData(song);
+    final Color iconColor = determineIconColor(song);
 
     return Column(
       children: <Widget>[
         Flexible(
           fit: FlexFit.tight,
           child: Text(
-              '$position',
+              '${song.position}',
               style: Theme.of(context).textTheme.titleLarge,
             ),
         ),
@@ -35,28 +34,28 @@ class SongPositionIndicator extends StatelessWidget {
     );
   }
 
-  IconData determineIconData(int position, Song song) {
+  IconData determineIconData(Song song) {
     if (song.isNew) {
       return Icons.fiber_new;
     } else if (song.isReentry) {
       return Icons.refresh;
-    } else if (position < song.lw) {
+    } else if (song.position < song.lw) {
       return Icons.arrow_upward;
-    } else if (position > song.lw) {
+    } else if (song.position > song.lw) {
       return Icons.arrow_downward;
     } else {
       return Icons.horizontal_rule;
     }
   }
 
-  Color determineIconColor(int position, Song song) {
+  Color determineIconColor(Song song) {
     if (song.isNew) {
       return Colors.green;
     } else if (song.isReentry) {
       return Colors.orange;
-    } else if (position > song.lw) {
+    } else if (song.position > song.lw) {
       return Colors.red;
-    } else if (position < song.lw) {
+    } else if (song.position < song.lw) {
       return Colors.blue;
     } else {
       return Colors.grey;

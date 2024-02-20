@@ -2,6 +2,7 @@
 class Song {
   final String artist;
   final String songName;
+  final int position;
   final int lw;
   final int peak;
   final bool isNew;
@@ -11,8 +12,10 @@ class Song {
   bool hasChanges = false;
 
   Song(
-      {required this.artist,
+      {
+      required this.artist,
       required this.songName,
+      required this.position,
       required this.lw,
       required this.peak,
       required this.isNew,
@@ -24,6 +27,7 @@ class Song {
   return Song(
     artist: json['artist'],
     songName: json['song_name'],
+    position: json['position'],
     lw: json['lw'],
     peak: json['peak'],
     isNew: json['is_new'] is int ? json['is_new'] == 1 : json['is_new'],

@@ -67,7 +67,7 @@ Future<bool> shouldDownloadDatabase(String path) async {
 
 Future<List<Song>> fetchSongs(DateTime date) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool offlineMode = prefs.getBool('offlineMode') ?? false;
+  bool offlineMode = prefs.getBool('offlineMode') ?? true;
   return offlineMode ? fetchSongsOffline(date) : fetchSongsOnline(date);
 }
 

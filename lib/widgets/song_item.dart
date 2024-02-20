@@ -6,9 +6,8 @@ import 'youtube_thumbnail.dart';
 
 class SongItem extends StatefulWidget {
   final Song song;
-  final int position;
 
-  const SongItem(this.position, this.song, {super.key});
+  const SongItem(this.song, {super.key});
 
   @override
   State<SongItem> createState() => _SongItemState();
@@ -19,7 +18,7 @@ class _SongItemState extends State<SongItem> {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: SongPositionIndicator(widget.position, widget.song),
+        leading: SongPositionIndicator(widget.song),
         title: Text(
           widget.song.songName,
           style: Theme.of(context).textTheme.titleMedium,
