@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
-import 'package:toptastic/models/video_playlist.dart';
 import '../models/data.dart';
 import '../models/utility.dart';
-import 'settings_page.dart';
 import 'song_list.dart';
 import 'package:intl/intl.dart';
 
@@ -40,12 +38,8 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   Future<void> _loadSongs() async {
     try {
       _songsFuture = fetchSongs(_selectedDate);
-    } on ServerNotConfiguredException {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const SettingsPage()),
-      );
-    } on FetchSongsException catch (e) {
+    }
+    on FetchSongsException catch (e) {
       _scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(
           content: Text(e.message), // Display the error message
@@ -53,19 +47,6 @@ class _TopTasticHomeState extends State<TopTasticHome> {
         ),
       );
     }
-  }
-
-  // ignore: unused_element
-  _saveChanges() async {
-    final List<Song> songs = await _songsFuture;
-    final updated = await updateVideos(songs);
-
-    _scaffoldMessengerKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text('Updated $updated videos'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
 
   @override

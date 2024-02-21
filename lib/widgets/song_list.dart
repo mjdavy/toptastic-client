@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/data.dart';
 import '../models/song.dart';
-import 'settings_page.dart';
 import 'song_item.dart';
 
 class SongList extends StatelessWidget {
@@ -19,12 +18,6 @@ class SongList extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             if (snapshot.error is ServerNotConfiguredException) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              });
               return const SizedBox.shrink();
             }
             if (snapshot.error is FetchSongsException) {
