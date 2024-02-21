@@ -26,7 +26,7 @@ class _SongItemState extends State<SongItem> {
         subtitle: Text(widget.song.artist),
         trailing: widget.song.videoId.isEmpty
             ? null
-            : YoutubeThumbnail(widget.song), // Use your YoutubeThumbnail widget here
+            : YoutubeThumbnail(widget.song),
         onTap: () {
           Navigator.push(
           context,
