@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:toptastic/widgets/song_info.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../models/song.dart';
+import 'chart_info.dart';
 
 class YoutubePlayerScreen extends StatefulWidget {
   const YoutubePlayerScreen({super.key, required this.song});
@@ -8,7 +10,7 @@ class YoutubePlayerScreen extends StatefulWidget {
   final Song song;
 
   @override
-    createState() => _YoutubePlayerScreenState();
+  createState() => _YoutubePlayerScreenState();
 }
 
 class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
@@ -36,31 +38,46 @@ class _YoutubePlayerScreenState extends State<YoutubePlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = Theme.of(context).primaryColor;
+    final accentColor = Theme.of(context).primaryColorDark;
     return Scaffold(
-      appBar: _showAppBar ? AppBar(
-        title: Text('${widget.song.songName} - ${widget.song.artist}'),
-      ) : null,
-      body: YoutubePlayerBuilder(
-        player: YoutubePlayer(
-          controller: _controller,
-          showVideoProgressIndicator: true,
-          progressIndicatorColor: Colors.blueAccent,
-          progressColors: const ProgressBarColors(
-            playedColor: Colors.blue,
-            handleColor: Colors.blueAccent,
+      appBar: _showAppBar
+          ? AppBar(
+              title: Text('${widget.song.songName} - ${widget.song.artist}'),
+            )
+          : null,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: YoutubePlayerBuilder(
+          player: YoutubePlayer(
+            controller: _controller,
+            showVideoProgressIndicator: true,
+            progressIndicatorColor: Colors.blueAccent,
+            progressColors: ProgressBarColors(
+              playedColor: themeColor,
+              handleColor: accentColor,
+            ),
           ),
+          builder: (context, player) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                player,
+                ChartInfo(song: widget.song),
+                Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleChildScrollView(
+                        child: SongInfo(widget.song),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+          onEnterFullScreen: () => setState(() => _showAppBar = false),
+          onExitFullScreen: () => setState(() => _showAppBar = true),
         ),
-        builder: (context, player) {
-          return Column(
-            children: [
-              // some widgets
-              player,
-              //some other widgets
-            ],
-          );
-        },
-        onEnterFullScreen: () => setState(() => _showAppBar = false),
-        onExitFullScreen: () => setState(() => _showAppBar = true),
       ),
     );
   }
