@@ -1,5 +1,6 @@
 
 class Song {
+  final int id;
   final String artist;
   final String songName;
   final int position;
@@ -13,6 +14,7 @@ class Song {
 
   Song(
       {
+      required this.id,
       required this.artist,
       required this.songName,
       required this.position,
@@ -25,6 +27,7 @@ class Song {
 
   factory Song.fromJson(Map<String, dynamic> json) {
   return Song(
+    id: json['id'],
     artist: json['artist'],
     songName: json['song_name'],
     position: json['position'],

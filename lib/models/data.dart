@@ -94,6 +94,7 @@ Future<List<Song>> fetchSongsOffline(DateTime date) async {
 Future<List<Song>> getSongsFromDB(String dbPath, String formattedDate) async {
   String query = """
     SELECT 
+      s.id,
       s.song_name, 
       s.artist, 
       s.video_id,
