@@ -28,6 +28,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
       GlobalKey<ScaffoldMessengerState>();
   var _selectedDate = findPreviousFriday(DateTime.now());
   late Future<List<Song>> _songsFuture;
+  bool _isFilteringFavorites = false;
 
   @override
   void initState() {
@@ -47,6 +48,12 @@ class _TopTasticHomeState extends State<TopTasticHome> {
         ),
       );
     }
+  }
+
+   void _toggleFavoriteFilter() {
+    setState(() {
+      _isFilteringFavorites = !_isFilteringFavorites;
+    });
   }
 
   @override
@@ -88,6 +95,13 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                 }
               },
             ),
+            IconButton(
+            icon: Icon(
+              _isFilteringFavorites ? Icons.star : Icons.star_border,
+              color: _isFilteringFavorites ? Colors.amber : null,
+            ),
+            onPressed: _toggleFavoriteFilter,
+          ),
           ],
         ),
         body: Container(
@@ -120,9 +134,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                   ],
                 ),
               ),
-              SongList(_songsFuture, (Song song) {
-                // Handle song tap
-              }),
+              SongList(songsFuture: _songsFuture, filterFavorites:  _isFilteringFavorites),
             ],
           ),
         ));

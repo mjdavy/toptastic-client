@@ -6,8 +6,9 @@ import 'youtube_thumbnail.dart';
 
 class SongItem extends StatefulWidget {
   final Song song;
+  final bool isFavorite;
 
-  const SongItem(this.song, {super.key});
+  const SongItem( {super.key, required this.song, this.isFavorite = false});
 
   @override
   State<SongItem> createState() => _SongItemState();
@@ -26,7 +27,7 @@ class _SongItemState extends State<SongItem> {
         subtitle: Text(widget.song.artist),
         trailing: widget.song.videoId.isEmpty
             ? null
-            : YoutubeThumbnail(widget.song),
+            : YoutubeThumbnail(song: widget.song, isFavorite: widget.isFavorite),
         onTap: () {
           Navigator.push(
           context,
