@@ -29,6 +29,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   var _selectedDate = findPreviousFriday(DateTime.now());
   late Future<List<Song>> _songsFuture;
   bool _isFilteringFavorites = false;
+  bool _isAscendingOrder = true;
 
   @override
   void initState() {
@@ -38,9 +39,12 @@ class _TopTasticHomeState extends State<TopTasticHome> {
 
   Future<void> _loadSongs() async {
     try {
-      _songsFuture = fetchSongs(_selectedDate);
-    }
-    on FetchSongsException catch (e) {
+      var songs = await fetchSongs(_selectedDate);
+      songs.sort((a, b) => _isAscendingOrder
+          ? a.position.compareTo(b.position)
+          : b.position.compareTo(a.position));
+      _songsFuture = Future.value(songs);
+    } on FetchSongsException catch (e) {
       _scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(
           content: Text(e.message), // Display the error message
@@ -50,9 +54,16 @@ class _TopTasticHomeState extends State<TopTasticHome> {
     }
   }
 
-   void _toggleFavoriteFilter() {
+  void _toggleFavoriteFilter() {
     setState(() {
       _isFilteringFavorites = !_isFilteringFavorites;
+    });
+  }
+
+  void _toggleSortOrder() {
+    setState(() {
+      _isAscendingOrder = !_isAscendingOrder;
+      _loadSongs();
     });
   }
 
@@ -77,6 +88,10 @@ class _TopTasticHomeState extends State<TopTasticHome> {
           title: const Text("TopTastic Videos"),
 
           actions: [
+            IconButton(
+              onPressed: () => {},
+              icon: const Icon(Icons.play_arrow),
+            ),
             // This is the button that will open the DatePicker to choose a playlist date
             IconButton(
               icon: const Icon(Icons.calendar_today),
@@ -96,12 +111,16 @@ class _TopTasticHomeState extends State<TopTasticHome> {
               },
             ),
             IconButton(
-            icon: Icon(
-              _isFilteringFavorites ? Icons.star : Icons.star_border,
-              color: _isFilteringFavorites ? Colors.amber : null,
+              icon: Icon(
+                _isFilteringFavorites ? Icons.star : Icons.star_border,
+                color: _isFilteringFavorites ? Colors.amber : null,
+              ),
+              onPressed: _toggleFavoriteFilter,
             ),
-            onPressed: _toggleFavoriteFilter,
-          ),
+            IconButton(
+              icon: const Icon(Icons.sort),
+              onPressed: _toggleSortOrder,
+            ),
           ],
         ),
         body: Container(
@@ -134,7 +153,9 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                   ],
                 ),
               ),
-              SongList(songsFuture: _songsFuture, filterFavorites:  _isFilteringFavorites),
+              SongList(
+                  songsFuture: _songsFuture,
+                  filterFavorites: _isFilteringFavorites),
             ],
           ),
         ));
