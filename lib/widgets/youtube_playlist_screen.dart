@@ -52,10 +52,10 @@ class _YoutubePlaylistScreenState extends State<YoutubePlaylistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Youtube Playlist'),
+        title: const Text('Playlist'),
       ),
       body: const Center(
-        child: Text('Youtube Playlist'),
+        child: Text('Playlist'),
       ),
     );
   }
