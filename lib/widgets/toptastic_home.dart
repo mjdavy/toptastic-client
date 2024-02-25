@@ -1,9 +1,13 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
 import '../models/data.dart';
 import '../models/utility.dart';
 import 'song_list.dart';
 import 'package:intl/intl.dart';
+
+import 'youtube_playlist_screen.dart';
 
 class TopTasticHome extends StatefulWidget {
   const TopTasticHome({super.key, required this.title});
@@ -34,6 +38,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   @override
   void initState() {
     super.initState();
+    _songsFuture = fetchSongs(_selectedDate);
     _loadSongs();
   }
 
@@ -67,6 +72,18 @@ class _TopTasticHomeState extends State<TopTasticHome> {
     });
   }
 
+  Future<void> _navigateToYoutubePlaylistScreen() async {
+    List<Song> songs = await _songsFuture;
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => YoutubePlaylistScreen(songs),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -89,7 +106,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
 
           actions: [
             IconButton(
-              onPressed: () => {},
+              onPressed: _navigateToYoutubePlaylistScreen,
               icon: const Icon(Icons.play_arrow),
             ),
             // This is the button that will open the DatePicker to choose a playlist date
