@@ -38,17 +38,16 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   @override
   void initState() {
     super.initState();
-    _songsFuture = fetchSongs(_selectedDate);
-    _loadSongs();
+    _songsFuture = _loadSongs(_selectedDate);
   }
 
-  Future<void> _loadSongs() async {
+  Future<List<Song>> _loadSongs(DateTime date) async {
     try {
-      var songs = await fetchSongs(_selectedDate);
+      var songs = await fetchSongs(date);
       songs.sort((a, b) => _isAscendingOrder
           ? a.position.compareTo(b.position)
           : b.position.compareTo(a.position));
-      _songsFuture = Future.value(songs);
+      return songs;
     } on FetchSongsException catch (e) {
       _scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(
@@ -57,6 +56,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
         ),
       );
     }
+    return <Song>[];
   }
 
   void _toggleFavoriteFilter() {
@@ -68,7 +68,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   void _toggleSortOrder() {
     setState(() {
       _isAscendingOrder = !_isAscendingOrder;
-      _loadSongs();
+       _songsFuture = _loadSongs(_selectedDate);
     });
   }
 
@@ -122,7 +122,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                 if (pickedDate != null) {
                   setState(() {
                     _selectedDate = findPreviousFriday(pickedDate);
-                    _songsFuture = fetchSongs(_selectedDate);
+                     _songsFuture = _loadSongs(_selectedDate);
                   });
                 }
               },

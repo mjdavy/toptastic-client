@@ -11,7 +11,7 @@ import 'song.dart';
 final logger = Logger();
 
 const String databaseURL =
-    'https://raw.githubusercontent.com/mjdavy/toptastic-client/main/songs.db';
+    'https://raw.githubusercontent.com/mjdavy/data/main/songs.db';
 
 enum FetchSongsResult {
   success,
