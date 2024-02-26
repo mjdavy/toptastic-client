@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:toptastic/widgets/toptastic_home.dart';
+import 'models/favorites_songs_model.dart';
 
-void main() {
-  //resolveHostname('gthang');
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var favorites = FavoriteSongsModel();
+  await favorites.loadFavoriteIds();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => favorites,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

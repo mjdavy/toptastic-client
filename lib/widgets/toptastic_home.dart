@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
 import '../models/data.dart';
@@ -68,7 +66,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   void _toggleSortOrder() {
     setState(() {
       _isAscendingOrder = !_isAscendingOrder;
-       _songsFuture = _loadSongs(_selectedDate);
+      _songsFuture = _loadSongs(_selectedDate);
     });
   }
 
@@ -78,7 +76,8 @@ class _TopTasticHomeState extends State<TopTasticHome> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => YoutubePlaylistScreen(songs),
+          builder: (context) =>
+              YoutubePlaylistScreen(songs: songs, date: _selectedDate, favoritesOnly: _isFilteringFavorites),
         ),
       );
     }
@@ -122,7 +121,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
                 if (pickedDate != null) {
                   setState(() {
                     _selectedDate = findPreviousFriday(pickedDate);
-                     _songsFuture = _loadSongs(_selectedDate);
+                    _songsFuture = _loadSongs(_selectedDate);
                   });
                 }
               },
@@ -172,7 +171,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
               ),
               SongList(
                   songsFuture: _songsFuture,
-                  filterFavorites: _isFilteringFavorites),
+                  favoritesOnly: _isFilteringFavorites),
             ],
           ),
         ));

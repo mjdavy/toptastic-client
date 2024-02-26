@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../models/favorites_songs_model.dart';
 import '../models/data.dart';
 import '../models/song.dart';
 import 'song_item.dart';
 
 class SongList extends StatelessWidget {
   final Future<List<Song>> songsFuture;
-  final bool filterFavorites;
-  const SongList({super.key, required this.songsFuture, this.filterFavorites = false});
+  final bool favoritesOnly;
+  const SongList(
+      {super.key, required this.songsFuture, this.favoritesOnly = false});
 
-  Future<Set<String>> _getFavoriteIds() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getKeys().where((key) => key.startsWith('favorite_')).toSet();
-  }
-
-  bool _isFavorite(Song song, Set<String> favoriteIds) {
-    return favoriteIds.contains('favorite_${song.id}');
-  }
-  
   @override
   Widget build(BuildContext context) {
+
+     // Access FavoriteSongsModel from the widget tree
+    final favoriteSongsModel = Provider.of<FavoriteSongsModel>(context);
+    
     return Expanded(
       child: FutureBuilder<List<dynamic>>(
-        future: Future.wait([songsFuture, _getFavoriteIds()]),
+        future: songsFuture,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -38,18 +35,19 @@ class SongList extends StatelessWidget {
           } else if (snapshot.data!.isEmpty) {
             return const Center(child: Text('No data for this date'));
           } else {
-            var songs = snapshot.data![0] as List<Song>;
-            var favoriteIds = snapshot.data![1] as Set<String>;
+            var songs = snapshot.data! as List<Song>;
+            var favoriteIds = favoriteSongsModel.favoriteIds; // get favoriteIds from FavoriteSongsModel
 
-            if (filterFavorites) {
-              songs = songs.where((song) => _isFavorite(song, favoriteIds)).toList();
+            if (favoritesOnly) {
+              songs = songs.where((song) => favoriteIds.contains(song.id)).toList(); // check if song.id is in favoriteIds
             }
 
             return ListView.builder(
                 padding: const EdgeInsets.all(8),
                 itemCount: songs.length,
-                itemBuilder: (BuildContext context, int index) =>
-                    SongItem(song: songs[index], isFavorite:  _isFavorite(songs[index], favoriteIds)));
+                itemBuilder: (BuildContext context, int index) => SongItem(
+                    song: songs[index],
+                     isFavorite: favoriteIds.contains(songs[index].id))); // check if song.id is in favoriteIds
           }
         },
       ),
