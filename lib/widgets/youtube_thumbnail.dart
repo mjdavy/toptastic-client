@@ -19,10 +19,10 @@ class YoutubeThumbnail extends StatelessWidget {
         },
       ),
       if (isFavorite)
-      const Icon(
-        Icons.star,
-        color: Colors.amber,
-      ),
+        const Icon(
+          Icons.star,
+          color: Colors.amber,
+        ),
     ]);
   }
 }

@@ -7,7 +7,11 @@ import '../models/favorites_songs_model.dart';
 import '../models/song.dart';
 
 class YoutubePlaylistScreen extends StatefulWidget {
-  const YoutubePlaylistScreen( {super.key, required this.songs, required this.date, this.favoritesOnly = false});
+  const YoutubePlaylistScreen(
+      {super.key,
+      required this.songs,
+      required this.date,
+      this.favoritesOnly = false});
 
   final List<Song> songs;
   final DateTime date;
@@ -35,13 +39,17 @@ class _YoutubePlaylistScreenState extends State<YoutubePlaylistScreen> {
   void initState() {
     super.initState();
 
-     // Access FavoriteSongsModel from the widget tree
-    final favoriteSongsModel = Provider.of<FavoriteSongsModel>(context, listen: false);
-    final favoriteIds = favoriteSongsModel.favoriteIds; // get favoriteIds from FavoriteSongsModel
-    
+    // Access FavoriteSongsModel from the widget tree
+    final favoriteSongsModel =
+        Provider.of<FavoriteSongsModel>(context, listen: false);
+    final favoriteIds = favoriteSongsModel
+        .favoriteIds; // get favoriteIds from FavoriteSongsModel
+
     _playlist = widget.favoritesOnly
-      ? widget.songs.where((song) => favoriteIds.contains(song.id)).toList() // if favoritesOnly, filter songs by favoriteIds
-      : widget.songs;
+        ? widget.songs
+            .where((song) => favoriteIds.contains(song.id))
+            .toList() // if favoritesOnly, filter songs by favoriteIds
+        : widget.songs;
 
     _controller = YoutubePlayerController(
       initialVideoId: _playlist[_currentVideoIndex].videoId,
@@ -76,11 +84,10 @@ class _YoutubePlaylistScreenState extends State<YoutubePlaylistScreen> {
     return Scaffold(
       appBar: _showAppBar
           ? AppBar(
-              title:  Text(
-                      DateFormat('EEEE, MMMM d, yyyy').format(widget.date),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  
+              title: Text(
+                DateFormat('EEEE, MMMM d, yyyy').format(widget.date),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             )
           : null,
       body: Padding(
