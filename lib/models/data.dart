@@ -120,18 +120,14 @@ Future<List<Song>> getSongsFromDB(String dbPath, String formattedDate) async {
 }
 
 Future<List<Song>> fetchSongsOnline(DateTime date) async {
+  
   final String formattedDate = DateFormat('yyyyMMdd').format(date);
-  final prefs = await SharedPreferences.getInstance();
-  final serverName = prefs.getString('serverName');
-  final port = prefs.getString('port');
 
-  if (serverName == null || port == null) {
-    throw ServerNotConfiguredException('Server is not configured');
-  }
-
-  final serverUrl = 'http://$serverName:$port/api/songs';
-  final url = '$serverUrl/$formattedDate';
   try {
+    
+    final serverName = await getServerUrl();
+    final serverUrl = '$serverName/api/songs';
+    final url = '$serverUrl/$formattedDate';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -147,4 +143,52 @@ Future<List<Song>> fetchSongsOnline(DateTime date) async {
     prefs.setBool('offlineMode', true);
     return await fetchSongsOffline(date);
   }
+}
+
+Future<String> getServerUrl() async {
+  final prefs = await SharedPreferences.getInstance();
+  final serverName = prefs.getString('serverName');
+  final port = prefs.getString('port');
+
+  if (serverName == null || port == null) {
+    throw ServerNotConfiguredException('Server is not configured');
+  }
+
+  return 'http://$serverName:$port';
+}
+
+Future<int> updateVideos(List<Song> songs) async {
+  final serverUrl = await getServerUrl();
+  final updateVideosUrl = '$serverUrl/api/update_videos';
+
+  // Convert the list of songs to a list of tracks
+  List<Map<String, dynamic>> tracks = songs
+      .where((song) => song.hasChanges)
+      .map((song) => {
+            'title': song.songName,
+            'artist': song.artist,
+            'videoId': song.videoId,
+          })
+      .toList();
+
+  // Prepare the request body
+  final Map<String, dynamic> requestBody = {'tracks': tracks};
+
+  // Make a POST request to update the videos
+  final response = await http.post(
+    Uri.parse(updateVideosUrl),
+    body: json.encode(requestBody),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> responseData = json.decode(response.body);
+    final int updatedCount = responseData['updated'];
+    logger.i('Videos updated successfully. Updated $updatedCount songs.');
+    return updatedCount;
+  } else {
+    // Handle error case
+    logger.i('Failed to update videos: ${response.statusCode}');
+  }
+  return 0;
 }

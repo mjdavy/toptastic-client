@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:toptastic/models/song.dart';
 import '../models/data.dart';
 import '../models/utility.dart';
+import 'settings_page.dart';
 import 'song_list.dart';
 import 'package:intl/intl.dart';
 
@@ -101,7 +102,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
 
-          title: const Text("TopTastic Videos"),
+          title: const Text("TopTastic"),
 
           actions: [
             IconButton(
@@ -136,6 +137,15 @@ class _TopTasticHomeState extends State<TopTasticHome> {
             IconButton(
               icon: const Icon(Icons.sort),
               onPressed: _toggleSortOrder,
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              },
             ),
           ],
         ),
