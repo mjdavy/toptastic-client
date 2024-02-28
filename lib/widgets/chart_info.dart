@@ -74,6 +74,10 @@ class _ChartInfoState extends State<ChartInfo> {
             'Weeks in Chart: ${widget.song.weeks}',
             style: textStyle,
           ),
+          Text(
+            'Video Id: ${widget.song.videoId}',
+            style: textStyle,
+          ),
         ],
       ),
     );
