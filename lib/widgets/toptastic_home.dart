@@ -33,7 +33,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   late Future<List<Song>> _songsFuture;
   bool _isFilteringFavorites = false;
   bool _isAscendingOrder = true;
-
+  
   @override
   void initState() {
     super.initState();
@@ -41,6 +41,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   }
 
   Future<List<Song>> _loadSongs(DateTime date) async {
+    
     try {
       var songs = await fetchSongs(date);
       songs.sort((a, b) => _isAscendingOrder
@@ -77,8 +78,10 @@ class _TopTasticHomeState extends State<TopTasticHome> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              YoutubePlaylistScreen(songs: songs, date: _selectedDate, favoritesOnly: _isFilteringFavorites),
+          builder: (context) => YoutubePlaylistScreen(
+              songs: songs,
+              date: _selectedDate,
+              favoritesOnly: _isFilteringFavorites),
         ),
       );
     }
@@ -139,14 +142,16 @@ class _TopTasticHomeState extends State<TopTasticHome> {
               onPressed: _toggleSortOrder,
             ),
             IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              },
-            ),
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsPage()),
+                  ).then((_) => setState(() {
+                    _songsFuture = _loadSongs(_selectedDate);
+                  }));
+                })
           ],
         ),
         body: Container(

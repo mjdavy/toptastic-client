@@ -4,17 +4,17 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import '../models/song.dart';
 import 'youtube_thumbnail.dart';
 
-class SongDetailScreen extends StatefulWidget {
+class VideoChooserScreen extends StatefulWidget {
   final Song song;
   final Function(String) onVideoIdUpdated; // Callback function
 
-  const SongDetailScreen({super.key, required this.song, required this.onVideoIdUpdated});
+  const VideoChooserScreen({super.key, required this.song, required this.onVideoIdUpdated});
 
   @override
-  createState() => _SongDetailScreenState();
+  createState() => _VideoChooserScreenState();
 }
 
-class _SongDetailScreenState extends State<SongDetailScreen> {
+class _VideoChooserScreenState extends State<VideoChooserScreen> {
   late TextEditingController _videoIdController;
   List<Video> _matchingVideos = [];
   bool _isLoading = false;

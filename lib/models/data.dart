@@ -139,6 +139,7 @@ Future<List<Song>> fetchSongsOnline(DateTime date) async {
           'Error fetching songs. Status code: ${response.statusCode}');
     }
   } catch (e) {
+    logger.i('Error fetching songs: $e');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('offlineMode', true);
     return await fetchSongsOffline(date);
