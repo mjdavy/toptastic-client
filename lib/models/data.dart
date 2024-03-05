@@ -11,7 +11,7 @@ import 'song.dart';
 final logger = Logger();
 
 const String databaseURL =
-    'https://raw.githubusercontent.com/mjdavy/data/main/songs.db';
+    'https://raw.githubusercontent.com/mjdavy/toptastic-data/main/songs.db';
 
 enum FetchSongsResult {
   success,
@@ -42,27 +42,31 @@ Future<void> downloadDatabase(String dbPath) async {
   }
 }
 
-Future<bool> shouldDownloadDatabase(String path) async {
-  File databaseFile = File(path);
+Future<void> updateLastDownloaded({bool reset = false}) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  if (!await databaseFile.exists()) {
-    return true;
-  } else {
-    try {
-      var response = await http.head(Uri.parse(databaseURL));
-      if (response.headers.containsKey('content-length')) {
-        int remoteFileLength = int.parse(response.headers['content-length']!);
-        int localFileLength = await databaseFile.length();
-        if (remoteFileLength != localFileLength) {
-          return true;
-        }
-      }
-    } catch (e) {
-      logger.i('Error checking database update: $e');
+  if (reset) {
+    prefs.remove('lastDownloaded');
+    return;
+  }
+  prefs.setString('lastDownloaded', DateTime.now().toString());
+}
+
+Future<DateTime?> getLastDownloaded() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? lastDownloaded = prefs.getString('lastDownloaded');
+  return lastDownloaded != null ? DateTime.parse(lastDownloaded) : null;
+}
+
+Future<bool> shouldDownloadDatabase(String path) async {
+  DateTime? lastDownloaded = await getLastDownloaded();
+  if (lastDownloaded != null) {
+    if (DateTime.now().difference(lastDownloaded).inDays < 1) {
       return false;
     }
   }
-  return false;
+
+  return true;
 }
 
 Future<List<Song>> fetchSongs(DateTime date) async {
@@ -82,6 +86,7 @@ Future<List<Song>> fetchSongsOffline(DateTime date) async {
   try {
     if (await shouldDownloadDatabase(path)) {
       await downloadDatabase(path);
+      await updateLastDownloaded();
     }
     songs = await getSongsFromDB(path, formattedDate);
   } catch (e) {
@@ -120,11 +125,9 @@ Future<List<Song>> getSongsFromDB(String dbPath, String formattedDate) async {
 }
 
 Future<List<Song>> fetchSongsOnline(DateTime date) async {
-  
   final String formattedDate = DateFormat('yyyyMMdd').format(date);
 
   try {
-    
     final serverName = await getServerUrl();
     final serverUrl = '$serverName/api/songs';
     final url = '$serverUrl/$formattedDate';

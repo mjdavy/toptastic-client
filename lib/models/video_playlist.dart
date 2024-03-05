@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/data.dart';
 import 'tube_track.dart';
 import 'song.dart';
@@ -8,20 +7,9 @@ import 'package:logger/logger.dart';
 
 final logger = Logger();
 
-Future<String> getServerUrl() async {
-  final prefs = await SharedPreferences.getInstance();
-  final serverName = prefs.getString('serverName');
-  final port = prefs.getString('port');
-
-  if (serverName == null || port == null) {
-    throw ServerNotConfiguredException('Server is not configured');
-  }
-
-  return 'http://$serverName:$port';
-}
-
 Future<void> createPlaylist(
-    String title, String description, List<Song> songs) async {
+  String title, String description, List<Song> songs) async {
+  
   final serverUrl = await getServerUrl();
   final createPlaylistUrl = '$serverUrl/api/create_playlist';
 
@@ -63,6 +51,7 @@ Future<void> createPlaylist(
 }
 
 Future<int> updateVideos(List<Song> songs) async {
+  
   final serverUrl = await getServerUrl();
   final updateVideosUrl = '$serverUrl/api/update_videos';
 

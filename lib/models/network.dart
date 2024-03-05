@@ -4,6 +4,8 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'data.dart';
 
 final logger = Logger();
 
@@ -17,6 +19,18 @@ Future<String?> resolveHostname(String hostname) async {
   }
 }
 
+Future<String> getServerUrl() async {
+  final prefs = await SharedPreferences.getInstance();
+  final serverName = prefs.getString('serverName');
+  final port = prefs.getString('port');
+
+  if (serverName == null || port == null) {
+    throw ServerNotConfiguredException('Server is not configured');
+  }
+
+  return 'http://$serverName:$port';
+}
+
 Future<String> getServerStatus(String serverUrl, String port) async {
   String? ipAddress = await resolveHostname(serverUrl);
   if (ipAddress != null) {
@@ -25,7 +39,8 @@ Future<String> getServerStatus(String serverUrl, String port) async {
       ipAddress = '[$ipAddress]';
     }
 
-    String url = 'http://$ipAddress:$port/api/status';
+    final serverUrl = await getServerUrl();
+    String url = '$serverUrl/api/status';
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

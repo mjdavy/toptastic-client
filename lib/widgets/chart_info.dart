@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toptastic/models/data.dart';
 import 'package:toptastic/models/song.dart';
 import '../models/favorites_songs_model.dart';
 import 'video_chooser_screen.dart';
@@ -38,6 +39,8 @@ class _ChartInfoState extends State<ChartInfo> {
     setState(() {
       widget.song.updateVideoId(videoId);
     });
+    updateVideos([widget.song]);
+    updateLastDownloaded(reset: true);
   }
 
   @override
