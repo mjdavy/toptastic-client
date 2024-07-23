@@ -15,6 +15,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _serverController = TextEditingController();
   final _portController = TextEditingController();
   bool _offlineMode = false;
+  bool _refreshDB = false;
 
   @override
   void initState() {
@@ -24,12 +25,19 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
+  Future<void> resetLastDownloaded() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Remove the preference to force a re-download
+    prefs.remove('lastDownloaded');
+  }
+
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _serverController.text = prefs.getString('serverName') ?? '';
       _portController.text = prefs.getString('port') ?? '';
       _offlineMode = prefs.getBool('offlineMode') ?? true;
+      _refreshDB = prefs.getBool('refreshDB') ?? false;
     });
   }
 
@@ -38,6 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setString('serverName', _serverController.text);
     prefs.setString('port', _portController.text);
     prefs.setBool('offlineMode', _offlineMode);
+    prefs.setBool('refreshDB', _refreshDB);
   }
 
   String _serverStatus = 'Unknown';
@@ -129,6 +138,20 @@ class _SettingsPageState extends State<SettingsPage> {
                     _offlineMode = value;
                     _saveSettings();
                   });
+                },
+              ),
+              SettingsTile.switchTile(
+                title: const Text('Refresh DB'),
+                leading: const Icon(Icons.refresh),
+                initialValue: _refreshDB,
+                onToggle: (bool value) {
+                  setState(() {
+                    _refreshDB = value;
+                    _saveSettings();
+                  });
+                  if (_refreshDB) {
+                    resetLastDownloaded();
+                  }
                 },
               ),
             ],

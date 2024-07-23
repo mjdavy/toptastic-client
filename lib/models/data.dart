@@ -59,6 +59,7 @@ Future<DateTime?> getLastDownloaded() async {
 }
 
 Future<bool> shouldDownloadDatabase(String path) async {
+  
   DateTime? lastDownloaded = await getLastDownloaded();
   if (lastDownloaded != null) {
     if (DateTime.now().difference(lastDownloaded).inDays < 1) {
