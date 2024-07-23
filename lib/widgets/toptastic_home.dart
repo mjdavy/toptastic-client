@@ -33,7 +33,7 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   late Future<List<Song>> _songsFuture;
   bool _isFilteringFavorites = false;
   bool _isAscendingOrder = true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -41,7 +41,6 @@ class _TopTasticHomeState extends State<TopTasticHome> {
   }
 
   Future<List<Song>> _loadSongs(DateTime date) async {
-    
     try {
       var songs = await fetchSongs(date);
       songs.sort((a, b) => _isAscendingOrder
@@ -87,6 +86,83 @@ class _TopTasticHomeState extends State<TopTasticHome> {
     }
   }
 
+  Widget _buildPlaylistIconButton() {
+    return FutureBuilder<List<Song>>(
+      future: _songsFuture,
+      builder: (context, snapshot) {
+        bool isPlaylistAvailable =
+            snapshot.hasData && snapshot.data!.isNotEmpty;
+        return IconButton(
+          onPressed:
+              isPlaylistAvailable ? _navigateToYoutubePlaylistScreen : null,
+          icon: const Icon(Icons.play_arrow),
+          color: isPlaylistAvailable ? null : Colors.grey,
+        );
+      },
+    );
+  }
+
+  Widget _buildCalendarIconButton() {
+    return IconButton(
+      icon: const Icon(Icons.calendar_today),
+      onPressed: () async {
+        final DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: _selectedDate,
+          firstDate: DateTime(2000),
+          lastDate: DateTime.now(),
+        );
+        if (pickedDate != null) {
+          setState(() {
+            _selectedDate = findPreviousFriday(pickedDate);
+            _songsFuture = _loadSongs(_selectedDate);
+          });
+        }
+      },
+    );
+  }
+
+  Widget _buildFavoriteFilterIconButton() {
+    return IconButton(
+      icon: Icon(
+        _isFilteringFavorites ? Icons.star : Icons.star_border,
+        color: _isFilteringFavorites ? Colors.amber : null,
+      ),
+      onPressed: _toggleFavoriteFilter,
+    );
+  }
+
+  Widget _buildSortIconButton() {
+    return IconButton(
+      icon: const Icon(Icons.sort),
+      onPressed: _toggleSortOrder,
+    );
+  }
+
+  Widget _buildSettingsIconButton(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.settings),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
+        ).then((_) => setState(() {
+              _songsFuture = _loadSongs(_selectedDate);
+            }));
+      },
+    );
+  }
+
+  List<Widget> _buildAppBarActions(BuildContext context) {
+    return [
+      _buildPlaylistIconButton(),
+      _buildCalendarIconButton(),
+      _buildFavoriteFilterIconButton(),
+      _buildSortIconButton(),
+      _buildSettingsIconButton(context),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -107,52 +183,8 @@ class _TopTasticHomeState extends State<TopTasticHome> {
 
           title: const Text("TopTastic"),
 
-          actions: [
-            IconButton(
-              onPressed: _navigateToYoutubePlaylistScreen,
-              icon: const Icon(Icons.play_arrow),
-            ),
-            // This is the button that will open the DatePicker to choose a playlist date
-            IconButton(
-              icon: const Icon(Icons.calendar_today),
-              onPressed: () async {
-                final DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: _selectedDate,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime.now(),
-                );
-                if (pickedDate != null) {
-                  setState(() {
-                    _selectedDate = findPreviousFriday(pickedDate);
-                    _songsFuture = _loadSongs(_selectedDate);
-                  });
-                }
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                _isFilteringFavorites ? Icons.star : Icons.star_border,
-                color: _isFilteringFavorites ? Colors.amber : null,
-              ),
-              onPressed: _toggleFavoriteFilter,
-            ),
-            IconButton(
-              icon: const Icon(Icons.sort),
-              onPressed: _toggleSortOrder,
-            ),
-            IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
-                  ).then((_) => setState(() {
-                    _songsFuture = _loadSongs(_selectedDate);
-                  }));
-                })
-          ],
+          // buildAppBarActions() is a helper method that creates the list of actions
+          actions: _buildAppBarActions(context),
         ),
         body: Container(
           decoration: const BoxDecoration(
