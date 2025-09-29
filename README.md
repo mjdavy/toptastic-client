@@ -42,6 +42,10 @@ git remote set-url origin https://github.com/mjdavy/toptastic_videos.git
 
 CI has intentionally not been extended here. If a workflow file still exists in historical commits, prefer adding `[skip ci]` to any exceptional maintenance commit messages to avoid wasted runs.
 
+### Quick tip
+
+Accidental chore commits? Append `[skip ci]` to the commit subject to avoid triggering legacy workflows retained in forks.
+
 ---
 
 Thank you for using TopTastic. See you in `toptastic_videos` 👋
